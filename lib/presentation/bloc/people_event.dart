@@ -1,3 +1,5 @@
+import 'people_state.dart';
+
 abstract class PeopleEvent {
   const PeopleEvent();
 }
@@ -14,4 +16,10 @@ class PeopleSearchQueryChanged extends PeopleEvent {
   const PeopleSearchQueryChanged(this.query);
 
   final String query;
+}
+
+class PeopleSortOrderChanged extends PeopleEvent {
+  const PeopleSortOrderChanged(this.sortOrder);
+
+  final PeopleSortOrder sortOrder;
 }

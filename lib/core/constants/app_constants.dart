@@ -90,6 +90,7 @@ class AppColors {
   static const avatarFrameBorder = Color(0xFF80CBC4);
   static const darkAvatarFrameBorder = Color(0xFF4DB6AC);
   static const darkSurface = Color(0xFF1A2423);
+  static const heartRed = Color(0xFFE53935);
   static const shadow = Color(0x1A000000);
   static const white = Color(0xFFFFFFFF);
   static const black = Color(0xFF000000);

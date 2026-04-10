@@ -2,12 +2,15 @@ import '../../domain/domain.dart';
 
 enum PeopleStatus { initial, loading, loaded, empty, error }
 
+enum PeopleSortOrder { nameAsc, nameDesc }
+
 class PeopleState {
   const PeopleState({
     this.status = PeopleStatus.initial,
     this.people = const [],
     this.filteredPeople = const [],
     this.searchQuery = '',
+    this.sortOrder = PeopleSortOrder.nameAsc,
     this.errorMessage,
   });
 
@@ -15,6 +18,7 @@ class PeopleState {
   final List<Person> people;
   final List<Person> filteredPeople;
   final String searchQuery;
+  final PeopleSortOrder sortOrder;
   final String? errorMessage;
 
   PeopleState copyWith({
@@ -22,6 +26,7 @@ class PeopleState {
     List<Person>? people,
     List<Person>? filteredPeople,
     String? searchQuery,
+    PeopleSortOrder? sortOrder,
     String? errorMessage,
     bool clearError = false,
   }) {
@@ -30,6 +35,7 @@ class PeopleState {
       people: people ?? this.people,
       filteredPeople: filteredPeople ?? this.filteredPeople,
       searchQuery: searchQuery ?? this.searchQuery,
+      sortOrder: sortOrder ?? this.sortOrder,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );
   }

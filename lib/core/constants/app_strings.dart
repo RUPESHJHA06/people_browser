@@ -6,6 +6,21 @@ class AppStrings {
   static const splashSubtitle =
       'Search, refresh, and open details in one place.';
   static const searchHint = 'Search by name';
+  static const menu = 'Menu';
+  static const appearance = 'Appearance';
+  static const theme = 'Theme';
+  static const systemTheme = 'System';
+  static const lightTheme = 'Light';
+  static const darkTheme = 'Dark';
+  static const sortPeople = 'Sort people';
+  static const sortNameAz = 'Name A-Z';
+  static const sortNameZa = 'Name Z-A';
+  static const refreshData = 'Refresh data';
+  static const about = 'About';
+  static const aboutDescription =
+      'Browse people, search quickly, refresh results, and open full details in one place.';
+  static const menuFooterPrefix = 'Built with';
+  static const menuFooterName = 'Rupesh Jha';
 
   static const unableToLoadPeople = 'Unable to load people';
   static const defaultRetryMessage = 'Please try again.';

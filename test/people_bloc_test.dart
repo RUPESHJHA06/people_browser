@@ -65,6 +65,27 @@ void main() {
       await bloc.close();
     },
   );
+
+  test('sorts loaded people in descending name order', () async {
+    final bloc = PeopleBloc(GetPeople(_FakePeopleRepository(_people)));
+    final loadedState = bloc.stream.firstWhere(
+      (state) => state.status == PeopleStatus.loaded,
+    );
+
+    bloc.add(const PeopleLoadRequested());
+    await loadedState;
+
+    final sortedState = bloc.stream.firstWhere(
+      (state) =>
+          state.sortOrder == PeopleSortOrder.nameDesc &&
+          state.filteredPeople.first.fullName == 'John Smith',
+    );
+    bloc.add(const PeopleSortOrderChanged(PeopleSortOrder.nameDesc));
+
+    final state = await sortedState;
+    expect(state.filteredPeople, [_people.last, _people.first]);
+    await bloc.close();
+  });
 }
 
 const _people = [
