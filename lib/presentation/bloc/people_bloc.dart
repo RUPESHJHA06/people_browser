@@ -38,21 +38,12 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
       return;
     }
 
-    final filteredPeople = _buildVisiblePeople(
+    _emitVisiblePeopleState(
+      emit,
       people: state.people,
       query: normalizedQuery,
       sortOrder: state.sortOrder,
-    );
-
-    emit(
-      state.copyWith(
-        status: filteredPeople.isEmpty
-            ? PeopleStatus.empty
-            : PeopleStatus.loaded,
-        filteredPeople: filteredPeople,
-        searchQuery: normalizedQuery,
-        clearError: true,
-      ),
+      searchQuery: normalizedQuery,
     );
   }
 
@@ -64,21 +55,11 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
       return;
     }
 
-    final filteredPeople = _buildVisiblePeople(
+    _emitVisiblePeopleState(
+      emit,
       people: state.people,
       query: state.searchQuery,
       sortOrder: event.sortOrder,
-    );
-
-    emit(
-      state.copyWith(
-        status: filteredPeople.isEmpty
-            ? PeopleStatus.empty
-            : PeopleStatus.loaded,
-        filteredPeople: filteredPeople,
-        sortOrder: event.sortOrder,
-        clearError: true,
-      ),
     );
   }
 
@@ -91,34 +72,50 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
 
     try {
       final people = await _getPeople();
-      final filteredPeople = _buildVisiblePeople(
+      _emitVisiblePeopleState(
+        emit,
         people: people,
         query: state.searchQuery,
         sortOrder: state.sortOrder,
       );
-
-      emit(
-        state.copyWith(
-          status: filteredPeople.isEmpty
-              ? PeopleStatus.empty
-              : PeopleStatus.loaded,
-          people: people,
-          filteredPeople: filteredPeople,
-          clearError: true,
-        ),
-      );
     } on AppException catch (error) {
-      emit(
-        state.copyWith(status: PeopleStatus.error, errorMessage: error.message),
-      );
+      emit(_buildErrorState(error.message));
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: PeopleStatus.error,
-          errorMessage: 'Something went wrong while loading people.',
-        ),
-      );
+      emit(_buildErrorState('Something went wrong while loading people.'));
     }
+  }
+
+  void _emitVisiblePeopleState(
+    Emitter<PeopleState> emit, {
+    required List<Person> people,
+    required String query,
+    required PeopleSortOrder sortOrder,
+    String? searchQuery,
+  }) {
+    final filteredPeople = _buildVisiblePeople(
+      people: people,
+      query: query,
+      sortOrder: sortOrder,
+    );
+
+    emit(
+      state.copyWith(
+        status: _resolveVisibleStatus(filteredPeople),
+        people: people,
+        filteredPeople: filteredPeople,
+        searchQuery: searchQuery,
+        sortOrder: sortOrder,
+        clearError: true,
+      ),
+    );
+  }
+
+  PeopleState _buildErrorState(String message) {
+    return state.copyWith(status: PeopleStatus.error, errorMessage: message);
+  }
+
+  PeopleStatus _resolveVisibleStatus(List<Person> filteredPeople) {
+    return filteredPeople.isEmpty ? PeopleStatus.empty : PeopleStatus.loaded;
   }
 
   List<Person> _filterPeople(List<Person> people, String query) {
