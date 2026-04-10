@@ -1,0 +1,22 @@
+class AppStrings {
+  const AppStrings._();
+
+  static const appTitle = 'People Browser';
+  static const splashTagline = 'Browse real people, fast.';
+  static const splashSubtitle =
+      'Search, refresh, and open details in one place.';
+  static const searchHint = 'Search by name';
+
+  static const unableToLoadPeople = 'Unable to load people';
+  static const defaultRetryMessage = 'Please try again.';
+  static const retry = 'Retry';
+  static const noPeopleFound = 'No people found';
+  static const noPeopleMessage = 'Try a different search or refresh the list.';
+  static const notAvailable = 'Not available';
+
+  static const email = 'Email';
+  static const phone = 'Phone';
+  static const location = 'Location';
+  static const openPhoto = 'Open photo';
+  static const unableToOpenAction = 'Could not open this action.';
+}
