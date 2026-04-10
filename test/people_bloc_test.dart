@@ -86,6 +86,29 @@ void main() {
     expect(state.filteredPeople, [_people.last, _people.first]);
     await bloc.close();
   });
+
+  test('trims search queries before filtering people', () async {
+    final bloc = PeopleBloc(GetPeople(_FakePeopleRepository(_people)));
+    final loadedState = bloc.stream.firstWhere(
+      (state) => state.status == PeopleStatus.loaded,
+    );
+
+    bloc.add(const PeopleLoadRequested());
+    await loadedState;
+
+    final filteredState = bloc.stream.firstWhere(
+      (state) =>
+          state.status == PeopleStatus.loaded &&
+          state.searchQuery == 'jane' &&
+          state.filteredPeople.length == 1,
+    );
+    bloc.add(const PeopleSearchQueryChanged('  jane  '));
+
+    final state = await filteredState;
+    expect(state.searchQuery, 'jane');
+    expect(state.filteredPeople, [_people.first]);
+    await bloc.close();
+  });
 }
 
 const _people = [
