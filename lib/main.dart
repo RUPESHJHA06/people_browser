@@ -30,22 +30,32 @@ class PeopleBrowserApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => PeopleBloc(getPeople)..add(const PeopleLoadRequested()),
-      child: MaterialApp(
-        title: AppStrings.appTitle,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light(),
-        darkTheme: AppTheme.dark(),
-        themeMode: ThemeMode.system,
-        builder: (context, child) {
-          return GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: child ?? const SizedBox.shrink(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+              PeopleBloc(getPeople)..add(const PeopleLoadRequested()),
+        ),
+        BlocProvider(create: (_) => ThemeCubit()),
+      ],
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp(
+            title: AppStrings.appTitle,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
+            themeMode: themeMode,
+            builder: (context, child) {
+              return GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                child: child ?? const SizedBox.shrink(),
+              );
+            },
+            home: const SplashPage(),
           );
         },
-        home: const SplashPage(),
       ),
     );
   }

@@ -10,6 +10,7 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
     on<PeopleLoadRequested>(_onLoadRequested);
     on<PeopleRefreshRequested>(_onRefreshRequested);
     on<PeopleSearchQueryChanged>(_onSearchQueryChanged);
+    on<PeopleSortOrderChanged>(_onSortOrderChanged);
   }
 
   final GetPeople _getPeople;
@@ -37,7 +38,11 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
       return;
     }
 
-    final filteredPeople = _filterPeople(state.people, normalizedQuery);
+    final filteredPeople = _buildVisiblePeople(
+      people: state.people,
+      query: normalizedQuery,
+      sortOrder: state.sortOrder,
+    );
 
     emit(
       state.copyWith(
@@ -46,6 +51,32 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
             : PeopleStatus.loaded,
         filteredPeople: filteredPeople,
         searchQuery: normalizedQuery,
+        clearError: true,
+      ),
+    );
+  }
+
+  void _onSortOrderChanged(
+    PeopleSortOrderChanged event,
+    Emitter<PeopleState> emit,
+  ) {
+    if (event.sortOrder == state.sortOrder) {
+      return;
+    }
+
+    final filteredPeople = _buildVisiblePeople(
+      people: state.people,
+      query: state.searchQuery,
+      sortOrder: event.sortOrder,
+    );
+
+    emit(
+      state.copyWith(
+        status: filteredPeople.isEmpty
+            ? PeopleStatus.empty
+            : PeopleStatus.loaded,
+        filteredPeople: filteredPeople,
+        sortOrder: event.sortOrder,
         clearError: true,
       ),
     );
@@ -60,7 +91,11 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
 
     try {
       final people = await _getPeople();
-      final filteredPeople = _filterPeople(people, state.searchQuery);
+      final filteredPeople = _buildVisiblePeople(
+        people: people,
+        query: state.searchQuery,
+        sortOrder: state.sortOrder,
+      );
 
       emit(
         state.copyWith(
@@ -95,5 +130,23 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
     return people
         .where((person) => person.fullName.toLowerCase().contains(lowerQuery))
         .toList(growable: false);
+  }
+
+  List<Person> _buildVisiblePeople({
+    required List<Person> people,
+    required String query,
+    required PeopleSortOrder sortOrder,
+  }) {
+    final filteredPeople = _filterPeople(people, query);
+    final sortedPeople = List<Person>.of(filteredPeople);
+
+    sortedPeople.sort((first, second) {
+      final result = first.fullName.toLowerCase().compareTo(
+        second.fullName.toLowerCase(),
+      );
+      return sortOrder == PeopleSortOrder.nameAsc ? result : -result;
+    });
+
+    return sortedPeople;
   }
 }
