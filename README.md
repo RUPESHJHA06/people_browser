@@ -2,7 +2,7 @@
 
 A Flutter app for browsing deterministic user profiles from the Random User API with search, sorting, favorites, pull-to-refresh, detail actions, and light or dark theming.
 
-This project is intentionally small, but it is not structured like a throwaway demo. It uses a layered architecture with `flutter_bloc`, clear data flow, and enough separation to scale into caching, persistence, pagination, and stronger UI test coverage.
+This project is intentionally compact, but it is structured like a real app instead of a throwaway demo. It uses a layered architecture with `flutter_bloc`, clear data flow, and a presentation layer split into smaller page and widget units.
 
 ## Preview
 
@@ -28,7 +28,7 @@ This project is intentionally small, but it is not structured like a throwaway d
 - supports pull-to-refresh and manual retry on failure
 - supports ascending and descending name sorting
 - supports favorites from both the list and detail screens
-- supports filtering the list to saved favorites only
+- supports filtering the list to favorite people only
 - opens a detail page with age, gender, email, phone, and location
 - launches email, phone, and map actions from the detail screen
 - supports light, dark, and system theme modes
@@ -45,7 +45,7 @@ This codebase works well as a compact reference for:
 
 ## Architecture
 
-The main request flow is:
+The main data flow is:
 
 ```text
 UI -> PeopleBloc -> GetPeople / GetVisiblePeople -> PeopleRepository -> PeopleRemoteDataSource -> UserService -> Random User API
@@ -57,6 +57,14 @@ Layer responsibilities:
 - `domain`: entities, repository contracts, and use cases
 - `data`: API calls, DTO/model mapping, datasource, and repository implementation
 - `core`: shared constants, theme setup, and app exceptions
+
+Recent presentation split:
+
+- `PeoplePage` owns the scaffold shell
+- `PeopleSearchSection` owns search input and debounce handling
+- `PeopleContent` owns loading, empty, error, and list rendering
+- `PeopleMenuDrawer` owns theme, sort, refresh, and about actions
+- `PeopleFavoritesToggleButton` owns the app-bar favorites filter affordance
 
 ## Key Product Behavior
 
@@ -191,9 +199,9 @@ The fetched dataset is intentionally small, so client-side filtering keeps the i
 
 ## Known Limitations
 
-- no offline caching or persistence yet
+- no offline caching or local persistence yet
 - no pagination or infinite scroll
-- favorites are not persisted across app restarts yet
+- favorites are reset on app restart
 - theme preference is not persisted across app restarts
 - error classification is still broad
 - search and sort only apply to the current fetched dataset
@@ -206,7 +214,6 @@ High-value next improvements:
 - persist favorites locally
 - cache the last successful people list
 - improve timeout, offline, and server error messaging
-- split larger UI files into smaller widgets
 - add widget and integration tests
 
 ## API
