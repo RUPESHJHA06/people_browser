@@ -6,6 +6,13 @@ class AppStrings {
   static const splashSubtitle =
       'Search, refresh, and open details in one place.';
   static const searchHint = 'Search by name';
+  static const favoritesOnly = 'Favorites only';
+  static const noFavoritesYet = 'No favorites yet';
+  static const noFavoritesMessage =
+      'Save people to quickly revisit them later.';
+  static const noFavoriteMatches = 'No saved people match your current search.';
+  static const savePerson = 'Save person';
+  static const removeSavedPerson = 'Remove saved person';
   static const menu = 'Menu';
   static const appearance = 'Appearance';
   static const theme = 'Theme';

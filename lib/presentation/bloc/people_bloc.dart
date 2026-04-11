@@ -16,6 +16,8 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
     on<PeopleRefreshRequested>(_onRefreshRequested);
     on<PeopleSearchQueryChanged>(_onSearchQueryChanged);
     on<PeopleSortOrderChanged>(_onSortOrderChanged);
+    on<PeopleFavoriteToggled>(_onFavoriteToggled);
+    on<PeopleFavoritesFilterToggled>(_onFavoritesFilterToggled);
   }
 
   final GetPeople _getPeople;
@@ -49,6 +51,8 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
       people: state.people,
       query: normalizedQuery,
       sortOrder: state.sortOrder,
+      favoriteIds: state.favoriteIds,
+      showFavoritesOnly: state.showFavoritesOnly,
       searchQuery: normalizedQuery,
     );
   }
@@ -66,6 +70,43 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
       people: state.people,
       query: state.searchQuery,
       sortOrder: event.sortOrder,
+      favoriteIds: state.favoriteIds,
+      showFavoritesOnly: state.showFavoritesOnly,
+    );
+  }
+
+  void _onFavoriteToggled(
+    PeopleFavoriteToggled event,
+    Emitter<PeopleState> emit,
+  ) {
+    final favoriteIds = Set<String>.of(state.favoriteIds);
+    if (favoriteIds.contains(event.personId)) {
+      favoriteIds.remove(event.personId);
+    } else {
+      favoriteIds.add(event.personId);
+    }
+
+    _emitVisiblePeopleState(
+      emit,
+      people: state.people,
+      query: state.searchQuery,
+      sortOrder: state.sortOrder,
+      favoriteIds: favoriteIds,
+      showFavoritesOnly: state.showFavoritesOnly,
+    );
+  }
+
+  void _onFavoritesFilterToggled(
+    PeopleFavoritesFilterToggled event,
+    Emitter<PeopleState> emit,
+  ) {
+    _emitVisiblePeopleState(
+      emit,
+      people: state.people,
+      query: state.searchQuery,
+      sortOrder: state.sortOrder,
+      favoriteIds: state.favoriteIds,
+      showFavoritesOnly: !state.showFavoritesOnly,
     );
   }
 
@@ -83,6 +124,8 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
         people: people,
         query: state.searchQuery,
         sortOrder: state.sortOrder,
+        favoriteIds: state.favoriteIds,
+        showFavoritesOnly: state.showFavoritesOnly,
       );
     } on AppException catch (error) {
       emit(_buildErrorState(error.message));
@@ -96,12 +139,16 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
     required List<Person> people,
     required String query,
     required PeopleSortOrder sortOrder,
+    required Set<String> favoriteIds,
+    required bool showFavoritesOnly,
     String? searchQuery,
   }) {
     final filteredPeople = _getVisiblePeople(
       people: people,
       query: query,
       descending: sortOrder == PeopleSortOrder.nameDesc,
+      favoriteIds: favoriteIds,
+      showFavoritesOnly: showFavoritesOnly,
     );
 
     emit(
@@ -111,6 +158,8 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
         filteredPeople: filteredPeople,
         searchQuery: searchQuery,
         sortOrder: sortOrder,
+        favoriteIds: favoriteIds,
+        showFavoritesOnly: showFavoritesOnly,
         clearError: true,
       ),
     );
