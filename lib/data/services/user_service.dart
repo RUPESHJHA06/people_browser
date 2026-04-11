@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
-
-import '../../core/core.dart';
-import '../models/user_model.dart';
+import 'package:people_browser/core/export.dart';
+import 'package:people_browser/data/export.dart';
 
 class UserService {
   final Dio dio;

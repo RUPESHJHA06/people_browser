@@ -1,5 +1,4 @@
-import '../models/user_model.dart';
-import '../services/user_service.dart';
+import 'package:people_browser/data/export.dart';
 
 abstract class PeopleRemoteDataSource {
   Future<List<UserModel>> fetchPeople();

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../../core/core.dart';
-import 'people_page.dart';
+import 'package:people_browser/core/export.dart';
+import 'package:people_browser/presentation/export.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

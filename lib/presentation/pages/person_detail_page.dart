@@ -1,10 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:people_browser/core/export.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../core/core.dart';
-import '../../domain/domain.dart';
+import 'package:people_browser/domain/export.dart';
 
 class PersonDetailPage extends StatelessWidget {
   const PersonDetailPage({super.key, required this.person});

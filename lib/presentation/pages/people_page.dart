@@ -2,12 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../core/core.dart';
-import '../../domain/domain.dart';
-import '../bloc/bloc.dart';
-import '../widgets/widgets.dart';
-import 'person_detail_page.dart';
+import 'package:people_browser/core/constants/export.dart';
+import 'package:people_browser/domain/export.dart';
+import 'package:people_browser/presentation/export.dart';
 
 class PeoplePage extends StatelessWidget {
   const PeoplePage({super.key});

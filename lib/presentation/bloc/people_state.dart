@@ -1,4 +1,4 @@
-import '../../domain/domain.dart';
+import 'package:people_browser/domain/export.dart';
 
 enum PeopleStatus { initial, loading, loaded, empty, error }
 
