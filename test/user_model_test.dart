@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:people_browser/data/data.dart';
+import 'package:people_browser/data/export.dart';
 
 void main() {
   test('maps Random User API json into a user model', () {

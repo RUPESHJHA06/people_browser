@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
-
-import '../../core/core.dart';
-import '../../domain/domain.dart';
-import '../datasources/people_remote_data_source.dart';
+import 'package:people_browser/core/export.dart';
+import 'package:people_browser/data/export.dart';
+import 'package:people_browser/domain/export.dart';
 
 class PeopleRepositoryImpl implements PeopleRepository {
   const PeopleRepositoryImpl(this._remoteDataSource);
@@ -12,7 +11,8 @@ class PeopleRepositoryImpl implements PeopleRepository {
   @override
   Future<List<Person>> getPeople() async {
     try {
-      return await _remoteDataSource.fetchPeople();
+      final models = await _remoteDataSource.fetchPeople();
+      return models.map((model) => model.toEntity()).toList(growable: false);
     } on DioException catch (error) {
       final statusCode = error.response?.statusCode;
       if (statusCode != null) {

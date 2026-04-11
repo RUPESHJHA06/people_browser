@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
-import '../../core/core.dart';
-import '../../domain/domain.dart';
+import 'package:people_browser/core/export.dart';
+import 'package:people_browser/domain/export.dart';
 
 class PersonTile extends StatelessWidget {
   const PersonTile({super.key, required this.person, required this.onTap});

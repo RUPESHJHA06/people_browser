@@ -1,12 +1,17 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:people_browser/core/export.dart';
+import 'package:people_browser/domain/export.dart';
 
-import '../../core/core.dart';
-import '../../domain/domain.dart';
 import 'people_event.dart';
 import 'people_state.dart';
 
 class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
-  PeopleBloc(this._getPeople) : super(const PeopleState()) {
+  PeopleBloc({
+    required GetPeople getPeople,
+    required GetVisiblePeople getVisiblePeople,
+  }) : _getPeople = getPeople,
+       _getVisiblePeople = getVisiblePeople,
+       super(const PeopleState()) {
     on<PeopleLoadRequested>(_onLoadRequested);
     on<PeopleRefreshRequested>(_onRefreshRequested);
     on<PeopleSearchQueryChanged>(_onSearchQueryChanged);
@@ -14,6 +19,7 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
   }
 
   final GetPeople _getPeople;
+  final GetVisiblePeople _getVisiblePeople;
 
   Future<void> _onLoadRequested(
     PeopleLoadRequested event,
@@ -92,10 +98,10 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
     required PeopleSortOrder sortOrder,
     String? searchQuery,
   }) {
-    final filteredPeople = _buildVisiblePeople(
+    final filteredPeople = _getVisiblePeople(
       people: people,
       query: query,
-      sortOrder: sortOrder,
+      descending: sortOrder == PeopleSortOrder.nameDesc,
     );
 
     emit(
@@ -116,34 +122,5 @@ class PeopleBloc extends Bloc<PeopleEvent, PeopleState> {
 
   PeopleStatus _resolveVisibleStatus(List<Person> filteredPeople) {
     return filteredPeople.isEmpty ? PeopleStatus.empty : PeopleStatus.loaded;
-  }
-
-  List<Person> _filterPeople(List<Person> people, String query) {
-    if (query.isEmpty) {
-      return people;
-    }
-
-    final lowerQuery = query.toLowerCase();
-    return people
-        .where((person) => person.fullName.toLowerCase().contains(lowerQuery))
-        .toList(growable: false);
-  }
-
-  List<Person> _buildVisiblePeople({
-    required List<Person> people,
-    required String query,
-    required PeopleSortOrder sortOrder,
-  }) {
-    final filteredPeople = _filterPeople(people, query);
-    final sortedPeople = List<Person>.of(filteredPeople);
-
-    sortedPeople.sort((first, second) {
-      final result = first.fullName.toLowerCase().compareTo(
-        second.fullName.toLowerCase(),
-      );
-      return sortOrder == PeopleSortOrder.nameAsc ? result : -result;
-    });
-
-    return sortedPeople;
   }
 }

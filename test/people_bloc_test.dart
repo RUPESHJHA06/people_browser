@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:people_browser/core/core.dart';
-import 'package:people_browser/domain/domain.dart';
-import 'package:people_browser/presentation/bloc/bloc.dart';
+import 'package:people_browser/core/export.dart';
+import 'package:people_browser/domain/export.dart';
+import 'package:people_browser/presentation/export.dart';
 
 void main() {
   test('loads people and exposes loaded state', () async {
-    final bloc = PeopleBloc(GetPeople(_FakePeopleRepository(_people)));
+    final bloc = _buildBloc();
     final loadingState = bloc.stream.firstWhere(
       (state) => state.status == PeopleStatus.loading,
     );
@@ -23,8 +23,8 @@ void main() {
   });
 
   test('sets error state when loading fails', () async {
-    final bloc = PeopleBloc(
-      GetPeople(_FakePeopleRepository.error('Network failed')),
+    final bloc = _buildBloc(
+      repository: _FakePeopleRepository.error('Network failed'),
     );
     final errorState = bloc.stream.firstWhere(
       (state) => state.status == PeopleStatus.error,
@@ -39,7 +39,7 @@ void main() {
   test(
     'filters loaded people by name and reports empty search results',
     () async {
-      final bloc = PeopleBloc(GetPeople(_FakePeopleRepository(_people)));
+      final bloc = _buildBloc();
       final loadedState = bloc.stream.firstWhere(
         (state) => state.status == PeopleStatus.loaded,
       );
@@ -67,7 +67,7 @@ void main() {
   );
 
   test('sorts loaded people in descending name order', () async {
-    final bloc = PeopleBloc(GetPeople(_FakePeopleRepository(_people)));
+    final bloc = _buildBloc();
     final loadedState = bloc.stream.firstWhere(
       (state) => state.status == PeopleStatus.loaded,
     );
@@ -88,7 +88,7 @@ void main() {
   });
 
   test('trims search queries before filtering people', () async {
-    final bloc = PeopleBloc(GetPeople(_FakePeopleRepository(_people)));
+    final bloc = _buildBloc();
     final loadedState = bloc.stream.firstWhere(
       (state) => state.status == PeopleStatus.loaded,
     );
@@ -109,6 +109,13 @@ void main() {
     expect(state.filteredPeople, [_people.first]);
     await bloc.close();
   });
+}
+
+PeopleBloc _buildBloc({PeopleRepository? repository}) {
+  return PeopleBloc(
+    getPeople: GetPeople(repository ?? _FakePeopleRepository(_people)),
+    getVisiblePeople: const GetVisiblePeople(),
+  );
 }
 
 const _people = [

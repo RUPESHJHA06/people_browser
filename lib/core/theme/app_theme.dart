@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../constants/app_constants.dart';
+import 'package:people_browser/core/export.dart';
 
 class AppTheme {
   const AppTheme._();

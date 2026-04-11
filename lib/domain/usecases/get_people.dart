@@ -1,5 +1,4 @@
-import '../entities/person.dart';
-import '../repositories/people_repository.dart';
+import 'package:people_browser/domain/export.dart';
 
 class GetPeople {
   const GetPeople(this._repository);
