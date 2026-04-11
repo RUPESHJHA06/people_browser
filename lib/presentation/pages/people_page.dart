@@ -18,6 +18,7 @@ class PeoplePage extends StatelessWidget {
         appBar: AppBar(
           title: const Text(AppStrings.appTitle),
           centerTitle: true,
+          actions: const [_FavoritesToggleButton()],
         ),
         body: const SafeArea(
           child: Column(
@@ -62,6 +63,8 @@ class _PeopleMenuDrawer extends StatelessWidget {
                     ),
                   ),
                   const _ThemeModeSection(),
+                  const Divider(height: 1),
+                  const _FavoritesSection(),
                   const Divider(height: 1),
                   const _SortSection(),
                   const Divider(height: 1),
@@ -225,6 +228,55 @@ class _SortSection extends StatelessWidget {
   }
 }
 
+class _FavoritesToggleButton extends StatelessWidget {
+  const _FavoritesToggleButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<PeopleBloc, PeopleState, ({bool enabled, int count})>(
+      selector: (state) =>
+          (enabled: state.showFavoritesOnly, count: state.favoriteIds.length),
+      builder: (context, data) {
+        return IconButton(
+          onPressed: () => context.read<PeopleBloc>().add(
+            const PeopleFavoritesFilterToggled(),
+          ),
+          tooltip: AppStrings.favoritesOnly,
+          icon: Badge.count(
+            isLabelVisible: data.count > 0,
+            count: data.count,
+            child: Icon(
+              data.enabled ? Icons.favorite : Icons.favorite_border,
+              color: data.enabled ? AppColors.heartRed : null,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _FavoritesSection extends StatelessWidget {
+  const _FavoritesSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<PeopleBloc, PeopleState, bool>(
+      selector: (state) => state.showFavoritesOnly,
+      builder: (context, showFavoritesOnly) {
+        return SwitchListTile(
+          secondary: const Icon(Icons.favorite_outline),
+          title: const Text(AppStrings.favoritesOnly),
+          value: showFavoritesOnly,
+          onChanged: (_) => context.read<PeopleBloc>().add(
+            const PeopleFavoritesFilterToggled(),
+          ),
+        );
+      },
+    );
+  }
+}
+
 void _showAboutSheet(BuildContext context) {
   final theme = Theme.of(context);
 
@@ -348,13 +400,7 @@ class _PeopleContent extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   const SizedBox(height: AppSizes.emptyStateTopSpacing),
-                  _MessageState(
-                    icon: Icons.person_search,
-                    title: AppStrings.noPeopleFound,
-                    message: state.people.isNotEmpty
-                        ? AppStrings.noPeopleMessage
-                        : AppStrings.defaultRetryMessage,
-                  ),
+                  _EmptyPeopleState(state: state),
                 ],
               ),
             );
@@ -362,6 +408,45 @@ class _PeopleContent extends StatelessWidget {
             return const _PeopleList();
         }
       },
+    );
+  }
+}
+
+class _EmptyPeopleState extends StatelessWidget {
+  const _EmptyPeopleState({required this.state});
+
+  final PeopleState state;
+
+  @override
+  Widget build(BuildContext context) {
+    if (state.people.isEmpty) {
+      return const _MessageState(
+        icon: Icons.person_search,
+        title: AppStrings.noPeopleFound,
+        message: AppStrings.defaultRetryMessage,
+      );
+    }
+
+    if (state.showFavoritesOnly && state.favoriteIds.isEmpty) {
+      return const _MessageState(
+        icon: Icons.favorite_border,
+        title: AppStrings.noFavoritesYet,
+        message: AppStrings.noFavoritesMessage,
+      );
+    }
+
+    if (state.showFavoritesOnly) {
+      return const _MessageState(
+        icon: Icons.heart_broken_outlined,
+        title: AppStrings.noPeopleFound,
+        message: AppStrings.noFavoriteMatches,
+      );
+    }
+
+    return const _MessageState(
+      icon: Icons.person_search,
+      title: AppStrings.noPeopleFound,
+      message: AppStrings.noPeopleMessage,
     );
   }
 }
@@ -392,7 +477,7 @@ class _PeopleList extends StatelessWidget {
               return SizedBox(
                 key: ValueKey(person.id),
                 height: AppSizes.personTileHeight,
-                child: PersonTile(
+                child: _PeopleListItem(
                   person: person,
                   onTap: () => _openDetails(context, person),
                 ),
@@ -407,6 +492,28 @@ class _PeopleList extends StatelessWidget {
   void _openDetails(BuildContext context, Person person) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => PersonDetailPage(person: person)),
+    );
+  }
+}
+
+class _PeopleListItem extends StatelessWidget {
+  const _PeopleListItem({required this.person, required this.onTap});
+
+  final Person person;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isFavorite = context.select<PeopleBloc, bool>(
+      (bloc) => bloc.state.favoriteIds.contains(person.id),
+    );
+
+    return PersonTile(
+      person: person,
+      onTap: onTap,
+      isFavorite: isFavorite,
+      onFavoriteToggle: () =>
+          context.read<PeopleBloc>().add(PeopleFavoriteToggled(person.id)),
     );
   }
 }

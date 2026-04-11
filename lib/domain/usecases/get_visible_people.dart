@@ -7,11 +7,16 @@ class GetVisiblePeople {
     required List<Person> people,
     required String query,
     required bool descending,
+    required Set<String> favoriteIds,
+    required bool showFavoritesOnly,
   }) {
     final normalizedQuery = query.trim().toLowerCase();
+    final favoriteFilteredPeople = showFavoritesOnly
+        ? people.where((person) => favoriteIds.contains(person.id))
+        : people;
     final filteredPeople = normalizedQuery.isEmpty
-        ? people
-        : people.where((person) {
+        ? favoriteFilteredPeople
+        : favoriteFilteredPeople.where((person) {
             return person.fullName.toLowerCase().contains(normalizedQuery);
           });
 

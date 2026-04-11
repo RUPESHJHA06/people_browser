@@ -11,6 +11,8 @@ class PeopleState {
     this.filteredPeople = const [],
     this.searchQuery = '',
     this.sortOrder = PeopleSortOrder.nameAsc,
+    this.favoriteIds = const {},
+    this.showFavoritesOnly = false,
     this.errorMessage,
   });
 
@@ -19,6 +21,8 @@ class PeopleState {
   final List<Person> filteredPeople;
   final String searchQuery;
   final PeopleSortOrder sortOrder;
+  final Set<String> favoriteIds;
+  final bool showFavoritesOnly;
   final String? errorMessage;
 
   PeopleState copyWith({
@@ -27,6 +31,8 @@ class PeopleState {
     List<Person>? filteredPeople,
     String? searchQuery,
     PeopleSortOrder? sortOrder,
+    Set<String>? favoriteIds,
+    bool? showFavoritesOnly,
     String? errorMessage,
     bool clearError = false,
   }) {
@@ -36,6 +42,8 @@ class PeopleState {
       filteredPeople: filteredPeople ?? this.filteredPeople,
       searchQuery: searchQuery ?? this.searchQuery,
       sortOrder: sortOrder ?? this.sortOrder,
+      favoriteIds: favoriteIds ?? this.favoriteIds,
+      showFavoritesOnly: showFavoritesOnly ?? this.showFavoritesOnly,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );
   }

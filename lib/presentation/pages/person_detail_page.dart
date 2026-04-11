@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:people_browser/core/export.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:people_browser/domain/export.dart';
+import 'package:people_browser/presentation/export.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PersonDetailPage extends StatelessWidget {
   const PersonDetailPage({super.key, required this.person});
@@ -23,6 +25,20 @@ class PersonDetailPage extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
+        actions: [
+          BlocSelector<PeopleBloc, PeopleState, bool>(
+            selector: (state) => state.favoriteIds.contains(person.id),
+            builder: (context, isFavorite) {
+              return FavoriteIconButton(
+                onPressed: () => context.read<PeopleBloc>().add(
+                  PeopleFavoriteToggled(person.id),
+                ),
+                isFavorite: isFavorite,
+                useFilledStyle: true,
+              );
+            },
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(AppSizes.spacingLg),

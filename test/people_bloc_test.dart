@@ -109,6 +109,68 @@ void main() {
     expect(state.filteredPeople, [_people.first]);
     await bloc.close();
   });
+
+  test('toggles favorites and exposes favorite-only results', () async {
+    final bloc = _buildBloc();
+    final loadedState = bloc.stream.firstWhere(
+      (state) => state.status == PeopleStatus.loaded,
+    );
+
+    bloc.add(const PeopleLoadRequested());
+    await loadedState;
+
+    final favoritedState = bloc.stream.firstWhere(
+      (state) => state.favoriteIds.contains(_people.last.id),
+    );
+    bloc.add(PeopleFavoriteToggled(_people.last.id));
+
+    expect((await favoritedState).favoriteIds, {_people.last.id});
+
+    final favoritesOnlyState = bloc.stream.firstWhere(
+      (state) =>
+          state.showFavoritesOnly &&
+          state.filteredPeople.length == 1 &&
+          state.filteredPeople.single == _people.last,
+    );
+    bloc.add(const PeopleFavoritesFilterToggled());
+
+    expect((await favoritesOnlyState).filteredPeople, [_people.last]);
+    await bloc.close();
+  });
+
+  test(
+    'removing the last visible favorite reports an empty favorites state',
+    () async {
+      final bloc = _buildBloc();
+      final loadedState = bloc.stream.firstWhere(
+        (state) => state.status == PeopleStatus.loaded,
+      );
+
+      bloc.add(const PeopleLoadRequested());
+      await loadedState;
+
+      bloc.add(PeopleFavoriteToggled(_people.first.id));
+      await bloc.stream.firstWhere(
+        (state) => state.favoriteIds.contains(_people.first.id),
+      );
+
+      bloc.add(const PeopleFavoritesFilterToggled());
+      await bloc.stream.firstWhere(
+        (state) => state.showFavoritesOnly && state.filteredPeople.length == 1,
+      );
+
+      final emptyState = bloc.stream.firstWhere(
+        (state) =>
+            state.showFavoritesOnly &&
+            state.favoriteIds.isEmpty &&
+            state.status == PeopleStatus.empty,
+      );
+      bloc.add(PeopleFavoriteToggled(_people.first.id));
+
+      expect((await emptyState).filteredPeople, isEmpty);
+      await bloc.close();
+    },
+  );
 }
 
 PeopleBloc _buildBloc({PeopleRepository? repository}) {

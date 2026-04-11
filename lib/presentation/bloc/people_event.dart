@@ -23,3 +23,13 @@ class PeopleSortOrderChanged extends PeopleEvent {
 
   final PeopleSortOrder sortOrder;
 }
+
+class PeopleFavoriteToggled extends PeopleEvent {
+  const PeopleFavoriteToggled(this.personId);
+
+  final String personId;
+}
+
+class PeopleFavoritesFilterToggled extends PeopleEvent {
+  const PeopleFavoritesFilterToggled();
+}

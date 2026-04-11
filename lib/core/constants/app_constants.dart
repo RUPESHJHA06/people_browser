@@ -13,6 +13,7 @@ class AppConstants {
   static const searchDebounceDuration = Duration(milliseconds: 300);
   static const loadingPulseDuration = Duration(milliseconds: 1100);
   static const imageFadeInDuration = Duration.zero;
+  static const favoriteToggleAnimationDuration = Duration(milliseconds: 250);
 }
 
 class AppSizes {
@@ -30,8 +31,12 @@ class AppSizes {
   static const radiusLg = 20.0;
 
   static const personTileHeight = 132.0;
+  static const personTileVerticalPadding = 1.0;
+  static const personTileElevation = 3.0;
+  static const personTileShadowOpacity = 0.08;
   static const avatarRadiusMd = 30.0;
   static const avatarSizeMd = 60.0;
+  static const avatarFramePadding = 2.0;
   static const avatarSizeLg = 64.0;
   static const detailAvatarFramePadding = 4.0;
   static const detailAvatarBorderWidth = 2.0;
@@ -39,6 +44,7 @@ class AppSizes {
   static const detailAvatarShadowOffsetY = 8.0;
   static const detailRowVerticalPadding = 6.0;
   static const detailActionIconSize = 18.0;
+  static const favoriteButtonSplashRadius = 20.0;
   static const splashClusterWidth = 156.0;
   static const splashClusterHeight = 104.0;
   static const splashSideAvatarTop = 28.0;
