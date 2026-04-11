@@ -1,23 +1,29 @@
 # People Browser
 
-A Flutter app for browsing deterministic user profiles from the Random User API with search, sorting, favorites, pull-to-refresh, detail actions, and light or dark theming.
+A Flutter app for browsing deterministic user profiles from the Random User API with fast search, sorting, favorites, pull-to-refresh, detail actions, and light or dark theming.
 
-This project is intentionally compact, but it is structured like a real app instead of a throwaway demo. It uses a layered architecture with `flutter_bloc`, clear data flow, and a presentation layer split into smaller page and widget units.
+People Browser is intentionally compact, but it is built with production-minded structure instead of demo-only shortcuts. The app uses `flutter_bloc`, layered architecture, deterministic API data, and a presentation layer split into focused widgets that are easier to test and evolve.
+
+## Highlights
+
+- deterministic dataset powered by Random User seed-based fetching
+- responsive search, sort, favorites, refresh, and detail flows
+- light, dark, and system theme support
+- layered Flutter architecture with focused presentation widgets
+- tested BLoC state transitions for key interactions
 
 ## Preview
 
 <p align="center">
   <img src="docs/images/home-light.png" alt="Home screen light mode" width="240" />
   <img src="docs/images/home-dark.png" alt="Home screen dark mode" width="240" />
-  <img src="docs/images/menu-dark.png" alt="Menu dark mode" width="240" />
+  <img src="docs/images/menu-drawer.png" alt="Menu drawer" width="240" />
 </p>
 
 <p align="center">
-  <img src="docs/images/profile-dark.png" alt="Profile screen dark mode" width="240" />
-</p>
-
-<p align="center">
-  <img src="docs/images/demo.gif" alt="People Browser demo" width="280" />
+  <img src="docs/images/searching.png" alt="Search results view" width="240" />
+  <img src="docs/images/favorite-sreen.png" alt="Favorites filtered view" width="240" />
+  <img src="docs/images/profile-screen.png" alt="Profile screen" width="240" />
 </p>
 
 ## What It Does
@@ -66,7 +72,7 @@ Recent presentation split:
 - `PeopleMenuDrawer` owns theme, sort, refresh, and about actions
 - `PeopleFavoritesToggleButton` owns the app-bar favorites filter affordance
 
-## Key Product Behavior
+## Product Notes
 
 ### Data Fetching
 
@@ -81,9 +87,7 @@ The fixed seed keeps the dataset stable enough for development, screenshots, and
 
 - search runs locally on the fetched dataset
 - search input is debounced for smoother interaction
-- sorting currently supports:
-  - name ascending
-  - name descending
+- sorting supports `name ascending` and `name descending`
 - favorites can be toggled without leaving the list
 - favorites-only mode can be toggled from the app bar or drawer
 
@@ -197,24 +201,15 @@ Without a fixed seed, the API would return a different result set frequently, wh
 
 The fetched dataset is intentionally small, so client-side filtering keeps the implementation simple and responsive.
 
-## Known Limitations
+## What’s Next
 
-- no offline caching or local persistence yet
-- no pagination or infinite scroll
-- favorites are reset on app restart
-- theme preference is not persisted across app restarts
-- error classification is still broad
-- search and sort only apply to the current fetched dataset
+Planned improvements:
 
-## Roadmap
-
-High-value next improvements:
-
-- persist theme preference locally
-- persist favorites locally
-- cache the last successful people list
-- improve timeout, offline, and server error messaging
-- add widget and integration tests
+- add local persistence for favorites and theme mode
+- cache the last successful people payload for faster reopen
+- sharpen loading, offline, and API error feedback
+- extend test coverage with widget and integration flows
+- explore pagination or staged loading for larger datasets
 
 ## API
 

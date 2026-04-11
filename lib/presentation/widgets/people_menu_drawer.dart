@@ -167,12 +167,14 @@ class _FavoritesSection extends StatelessWidget {
     return BlocSelector<PeopleBloc, PeopleState, bool>(
       selector: (state) => state.showFavoritesOnly,
       builder: (context, showFavoritesOnly) {
-        return SwitchListTile(
-          secondary: const Icon(Icons.favorite_outline),
+        return ListTile(
+          leading: const Icon(Icons.favorite_outline),
           title: const Text(AppStrings.favoritesOnly),
-          value: showFavoritesOnly,
-          onChanged: (_) => context.read<PeopleBloc>().add(
-            const PeopleFavoritesFilterToggled(),
+          trailing: Switch(
+            value: showFavoritesOnly,
+            onChanged: (_) => context.read<PeopleBloc>().add(
+              const PeopleFavoritesFilterToggled(),
+            ),
           ),
         );
       },
